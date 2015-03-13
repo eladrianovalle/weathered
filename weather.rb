@@ -1,9 +1,9 @@
 require 'yahoo_weatherman'
 
-# puts "What is your location?  Enter city or zipcode"
-# location = gets.chomp
+puts "What is your location?  Enter city or zipcode"
+location = gets.chomp
 
-def getWeather(location)
+def getCurrentWeather(location)
 
   client = Weatherman::Client.new
 
@@ -11,22 +11,39 @@ def getWeather(location)
   tempInF = tempInC * 9 / 5 + 32
   forecast = client.lookup_by_location(location).condition['text']
 
-  puts "It is #{tempInF}°F and #{forecast}."
+  puts "It is currently #{tempInF}°F and #{forecast}."
 
 end
 
-# getWeather(location)
+def getForecast(location)
+  client = Weatherman::Client.new
+  weatherman = client.lookup_by_location(location)
+  forecasts = weatherman.forecasts
 
-client = Weatherman::Client.new
-weatherman = client.lookup_by_location('11221')
-forecasts = weatherman.forecasts
+  forecasts.each do |forecast|
+    date = forecast["date"]
+    day = DateTime.iso8601("#{date}").strftime('%A')
+    weather = forecast["text"]
+    high = forecast["high"].to_i * 9 / 5 + 32
+    low = forecast["low"].to_i * 9 / 5 + 32
 
+    d = Time.now
+    today = d.strftime('%w')
+    dayNum = DateTime.iso8601("#{date}").strftime('%w')
 
-forecasts.each do |forecast|
-  day = forecast["day"]
-  weather = forecast["text"]
-  high = forecast["high"]
-  low = forecast["low"]
+    if dayNum == today
+      day = "Today"
+    elsif dayNum.to_i == today.to_i + 1
+      day = "Tomorrow"
+    else
+      day
+    end
 
-  puts "#{day} is going to be #{weather}, with a high of #{high} and a low of #{low} degrees Celsius."
+    puts "#{day} the forecast is #{weather}, with a high of #{high}˚F and a low of #{low}˚F."
+  end
 end
+
+getCurrentWeather(location)
+getForecast(location)
+
+
