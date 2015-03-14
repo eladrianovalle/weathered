@@ -4,18 +4,19 @@ require 'yahoo_weatherman'
 def getLocation
   puts "What is your location?  Enter city or zipcode"
   location = gets.chomp
-
-  client = Weatherman::Client.new
-  client.lookup_by_location(location)
 end
 
-def getCurrentWeather(location)
+def lookupLocation(currLoc)
+  client = Weatherman::Client.new
+  client.lookup_by_location(currLoc)
+end
 
+def getCurrentWeather(location, currLoc)
   tempInC = location.condition['temp']
   tempInF = tempInC * 9 / 5 + 32
   forecast = location.condition['text'].downcase
 
-  puts "It is currently #{tempInF}°F and #{forecast}."
+  puts "It is currently #{tempInF}°F/#{tempInC}˚C and #{forecast} in #{currLoc}."
 
 end
 
@@ -39,14 +40,15 @@ def getForecast(location, today)
       weekday = day
     end
 
-    puts "#{weekday} the forecast is #{weather}, with a high of #{high}˚F and a low of #{low}˚F."
+    puts "#{weekday}'s forecast is #{weather}, with a high of #{high}˚F and a low of #{low}˚F."
   end
 end
 
-location = getLocation
+currLoc = getLocation
+location = lookupLocation(currLoc)
 today = Time.now.strftime('%w').to_i
 
-getCurrentWeather(location)
+getCurrentWeather(location, currLoc)
 getForecast(location, today)
 
 
